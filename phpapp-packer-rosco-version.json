@@ -1,0 +1,59 @@
+{
+  "variables": {
+    "tenant_id": "{{user `azure_tenant_id`}}",
+    "client_id": "{{user `azure_client_id`}}",
+    "client_secret": "{{user `azure_client_secret`}}",
+    "resource_group": "{{user `azure_resource_group`}}",
+    "storage_account": "{{user `azure_storage_account`}}",
+    "subscription_id": "{{user `azure_subscription_id`}}"
+  },
+  "builders": [{
+    "type": "azure-arm",
+
+    "client_id": "{{user `azure_client_id`}}",
+    "client_secret": "{{user `azure_client_secret`}}",
+    "resource_group_name": "{{user `azure_resource_group`}}",
+    "storage_account": "{{user `azure_storage_account`}}",
+    "subscription_id": "{{user `azure_subscription_id`}}",
+    "tenant_id": "{{user `azure_tenant_id`}}",
+
+    "capture_container_name": "images",
+    "capture_name_prefix": "nodeapp",
+
+    "os_type": "Linux",
+    "image_publisher": "Canonical",
+    "image_offer": "UbuntuServer",
+    "image_sku": "16.04.0-LTS",
+
+
+    "location": "West US",
+    "vm_size": "Standard_A2"
+  }],
+  "provisioners": [
+
+  {
+    "execute_command": "chmod +x {{ .Path }}; {{ .Vars }} sudo -E sh '{{ .Path }}'",
+    "inline": [
+      "apt-get update",
+      "apt-get upgrade -y",
+      "apt-get install ansible -y"
+
+    ],
+    "inline_shebang": "/bin/sh -x",
+    "type": "shell"
+  },
+  {
+      "type": "ansible-local",
+      "playbook_file": "/tmp/phpapp-packer-ansible-provisioner.yml"
+  },
+  {
+    "execute_command": "chmod +x {{ .Path }}; {{ .Vars }} sudo -E sh '{{ .Path }}'",
+    "inline": [
+      "/usr/sbin/waagent -force -deprovision+user && export HISTSIZE=0 && sync"
+    ],
+    "inline_shebang": "/bin/sh -x",
+    "type": "shell"
+  }
+  ]
+
+}
