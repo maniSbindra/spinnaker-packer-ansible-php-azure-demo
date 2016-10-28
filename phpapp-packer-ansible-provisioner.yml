@@ -16,10 +16,10 @@
     git: repo=https://github.com/maniSbindra/spinnaker-packer-ansible-php-azure-demo.git dest=/opt/phpapp update=yes force=yes accept_hostkey=yes 
     register: git_finished
 
-    - name: copy index.php
-      sudo: yes
-      copy: src=/opt/php/index.php  dest=/var/www/html/index.php mode=644
-      notify: Restart Apache
+  - name: copy index.php
+    sudo: yes
+    copy: src=/opt/php/index.php  dest=/var/www/html/index.php mode=644
+    notify: Restart Apache
 
 
   handlers:
